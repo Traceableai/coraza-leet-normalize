@@ -44,6 +44,25 @@ SecRule ARGS "@rx (?i)ignore\s+.*instructions" \
 
 The transformation chain: raw input → URL decode → normalize confusables → regex match.
 
+## What It Catches
+
+Given a WAF rule matching `(?i)ignore\s+.*instructions`, here's what happens with and without the plugin:
+
+```
+Evasion technique   | Attack payload                              | Without plugin | With plugin
+--------------------|---------------------------------------------|----------------|------------
+leet-speak          | 1gn0r3 4ll pr3v10us 1nstruct10ns            | BYPASSED       | BLOCKED
+cyrillic homoglyphs | ign[U+043E]r[U+0435] all instructions       | BYPASSED       | BLOCKED
+greek homoglyphs    | ign[U+03BF]re all instructi[U+03BF]ns       | BYPASSED       | BLOCKED
+zero-width chars    | i[ZW]g[ZW]n[ZW]o[ZW]r[ZW]e all instructions | BYPASSED       | BLOCKED
+mixed evasion       | 1gn[ZW][U+043E]r[U+0435] 4ll 1nstruct10ns  | BYPASSED       | BLOCKED
+benign input        | order 12345 confirmed                       | allowed        | allowed
+```
+
+`[U+043E]` = Cyrillic о (looks identical to Latin o), `[U+0435]` = Cyrillic е, `[U+03BF]` = Greek ο, `[ZW]` = zero-width space. That's the point — these characters are visually indistinguishable from their Latin equivalents, so they bypass regex rules undetected.
+
+Every evasion technique slips past the raw regex but gets caught after normalization. Benign input remains unaffected — no false positives.
+
 ## What It Normalizes
 
 ### Leet-speak (8 mappings)
