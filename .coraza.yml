@@ -1,0 +1,23 @@
+name: coraza-leet-normalize
+author: Traceable AI
+repository: github.com/Traceableai/coraza-leet-normalize
+license: apache2
+description: >
+  Normalizes leet-speak, Cyrillic/Greek homoglyphs, and zero-width Unicode
+  characters for WAF evasion prevention. Registers t:confusableNormalize.
+version:
+  - ">= v3.4"
+tags:
+  - transformation
+  - normalization
+  - homoglyph
+  - confusable
+  - leet-speak
+  - prompt-injection
+  - evasion
+defs:
+  - name: confusableNormalize
+    type: transformation
+    description: >
+      Normalizes visually confusable characters to their ASCII Latin equivalents
+      and strips zero-width Unicode characters.
